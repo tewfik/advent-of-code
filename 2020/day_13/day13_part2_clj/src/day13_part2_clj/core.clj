@@ -113,7 +113,7 @@
 ;;       t
 ;;       (recur (inc t)))))
 
-(defn find-step [t-base step [bus rank]]
+(defn find-common-time [t-base step [bus rank]]
   (loop [t t-base]
     (if (= 0 (mod (+ t rank) bus))
       t
@@ -123,12 +123,11 @@
   (let [buses-rank (map vector buses (range))
         first-bus (first buses)
         rest-buses (rest buses-rank)]
-                                        ;(reduce find-step (first buses) (rest buses-rank))
     (loop [t-base first-bus step first-bus rest-buses2 rest-buses]
       (if (empty? rest-buses2)
         t-base
         (recur
-         (find-step t-base step (first rest-buses2))
+         (find-common-time t-base step (first rest-buses2))
          (* step (ffirst rest-buses2))
          (rest rest-buses2))))))
 
