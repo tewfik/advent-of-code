@@ -80,14 +80,14 @@
     0))
 
 (defn solve-part-1 [max-turn starting-numbers]
-  (loop [memory (zipmap starting-numbers (rest (range)))
+  (loop [memory (transient (zipmap starting-numbers (rest (range))))
          last-number (last starting-numbers)
          turn (inc (count starting-numbers))]
     (let [spoken-number (get-spoken-number memory last-number turn)]
       (if (= max-turn turn)
         spoken-number
         (recur
-         (assoc memory last-number (dec turn))
+         (assoc! memory last-number (dec turn))
          spoken-number
          (inc turn))))))
 
