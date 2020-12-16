@@ -75,9 +75,10 @@
   (:gen-class))
 
 (defn get-spoken-number [memory last-number turn]
-  (if (contains? memory last-number)
-    (- (dec turn) (memory last-number 0))
-    0))
+  (let [last-seen (get memory last-number)]
+    (if (nil? last-seen)
+      0
+      (- (dec turn) last-seen))))
 
 (defn solve-part-1 [max-turn starting-numbers]
   (loop [memory (transient (zipmap starting-numbers (rest (range))))
