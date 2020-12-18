@@ -1,7 +1,8 @@
 (ns day17-clj.core
   (:require
    [clojure.string :as str]
-   [clojure.set :as set])
+   [clojure.set :as set]
+   [clojure.math.combinatorics :as combo])
   (:gen-class))
 
 (defn parse-line [line]
@@ -25,14 +26,11 @@
    (map #(conj % 0))
    (set))) ; add z =0
 
-(defn get-neighbors [[x y z]]
-  (set
-   (for [x' (range (- x 1) (inc (+ x 1)))
-         y' (range (- y 1) (inc (+ y 1)))
-         z' (range (- z 1) (inc (+ z 1)))
-         :let [neighbor [x' y' z']]
-         :when (not= neighbor [x y z])]
-     neighbor)))
+(defn get-neighbors [coords]
+  (let [ranges (map #(range (- % 1) (inc (+ % 1))) coords)
+        neighbors-plus-current (apply combo/cartesian-product ranges)
+        neighbors (disj (set neighbors-plus-current) coords)]
+    neighbors))
 
 (defn get-world-plus-neighbors [world]
   (reduce set/union world (map get-neighbors world)))
@@ -54,7 +52,15 @@
     (iterate new-world world)
     n)))
 
+(defn solve-part-2 [world n]
+  (let [hyper-world (set (map #(conj % 0) world))]
+    (count
+     (nth
+      (iterate new-world hyper-world)
+      n))))
+
 (defn -main
   [& args]
   (def world (parse-input (slurp "resources/input.txt")))
-  (solve-part-1 world 6))
+  (println "part 1:" (solve-part-1 world 6))
+  (time (println "part 2:" (solve-part-2 world 6))))
